@@ -1,6 +1,9 @@
 package gopipeauth
 
-import "errors"
+import (
+	"errors"
+	"gopipe/internal/database"
+)
 
 const UNAUTHORIZED_ERROR = "Unauthorized"
 
@@ -16,5 +19,9 @@ func AuthenticateDataInput(authData DataInputAuth) error {
 	if authData.ApiKey == "" {
 		return errors.New(UNAUTHORIZED_ERROR)
 	}
-	return nil
+	db := database.Open()
+	if database.UserExist(db, authData.UserId, authData.ApiKey) {
+		return nil
+	}
+	return errors.New(UNAUTHORIZED_ERROR)
 }

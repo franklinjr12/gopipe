@@ -53,4 +53,4 @@ func main() {
 	log.Fatal(s.ListenAndServe())
 }
 
-// curl -X POST "localhost:8123/data" -H "ApiKey: bla123" -H "UserId: 12" -H "Application: River Monitoring" -d "{\"riverName\":\"MuchWater\",\"riverIdPoint\":123,\"level\":3.5,\"temperature\":30.0}"
+// curl -X POST "localhost:8123/data" -H "ApiKey: 123" -H "UserId: 1" -H "Application: River Monitoring" -d "{\"riverName\":\"MuchWater\",\"riverIdPoint\":123,\"level\":3.5,\"temperature\":30.0}"

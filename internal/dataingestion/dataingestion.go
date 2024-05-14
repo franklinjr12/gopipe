@@ -1,8 +1,8 @@
 package dataingestion
 
 import (
-	"database/sql"
 	"fmt"
+	"gopipe/internal/database"
 )
 
 type DataIngestionInput struct {
@@ -13,10 +13,10 @@ type DataIngestionInput struct {
 }
 
 func Ingest(dataInput DataIngestionInput) {
-	db, err := sql.Open("postgres", "gopipePostgres")
-	if err != nil {
-		fmt.Println("check database setup")
+	db := database.Open()
+	if db == nil {
 		return
 	}
 	defer db.Close()
+	fmt.Println("Doing database work...")
 }
