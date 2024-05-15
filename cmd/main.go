@@ -30,9 +30,9 @@ func ReceiveData(w http.ResponseWriter, r *http.Request) {
 			application = "Test"
 		}
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, fmt.Sprintf("Data ingested to application '%s'", application))
-		dataInput := dataingestion.DataIngestionInput{UserId: uint64(userId), Data: body, Application: application}
-		dataingestion.Ingest(dataInput)
+		io.WriteString(w, fmt.Sprintf("Application '%s'", application))
+		dataInput := dataingestion.DataIngestionInput{UserId: uint64(userId), Data: body, Application: application, ShouldPipe: r.Header.Get("ShouldPipe")}
+		go dataingestion.Ingest(dataInput)
 
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -53,4 +53,4 @@ func main() {
 	log.Fatal(s.ListenAndServe())
 }
 
-// curl -X POST "localhost:8123/data" -H "ApiKey: 123" -H "UserId: 1" -H "Application: River Monitoring" -d "{\"riverName\":\"MuchWater\",\"riverIdPoint\":123,\"level\":3.5,\"temperature\":30.0}"
+// curl -X POST "localhost:8123/data" -H "ApiKey: 123" -H "UserId: 1" -H "Application: River Monitoring" -H "ShouldPipe: false" -d "{\"riverName\":\"MuchWater\",\"riverIdPoint\":123,\"level\":3.5,\"temperature\":30.0}"
