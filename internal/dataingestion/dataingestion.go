@@ -3,6 +3,7 @@ package dataingestion
 import (
 	"fmt"
 	"gopipe/internal/database"
+	"gopipe/internal/normalizer"
 )
 
 type DataIngestionInput struct {
@@ -25,6 +26,14 @@ func Ingest(dataInput DataIngestionInput) {
 		err := database.WriteUnpipedData(db, database.UnpipedData{UserId: dataInput.UserId, Application: dataInput.Application, Data: dataInput.Data})
 		if err != nil {
 			fmt.Println("Error writting unpiped data. ", err.Error())
+		}
+	} else {
+		jsonData, err := normalizer.ToJson(dataInput.Data)
+		if err != nil {
+			// data is in raw bytes format, need to parse it to structs
+			fmt.Println("data is in raw bytes format, need to parse it to structs")
+		} else {
+			fmt.Println("Ignore. ", jsonData)
 		}
 	}
 }
