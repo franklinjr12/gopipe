@@ -10,6 +10,7 @@ type DataIngestionInput struct {
 	Data        []byte
 	Application string
 	UserId      uint64
+	DeviceId    uint64
 	ShouldPipe  string
 	Args        []string
 }
