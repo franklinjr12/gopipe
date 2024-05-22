@@ -7,15 +7,15 @@ import (
 )
 
 type ExampleData struct {
-	id       uint64
-	value    float32
-	strBytes [20]byte
+	Id       uint32
+	Value    float32
+	StrBytes [20]byte
 }
 
 func main() {
 	strBytes := [20]byte{}
 	copy(strBytes[:], "bla")
-	d := ExampleData{id: 1, value: 3.2, strBytes: strBytes}
+	d := ExampleData{Id: 1, Value: 3.2, StrBytes: strBytes}
 	file, err := os.Create("temp/data.bin")
 	if err != nil {
 		fmt.Println("Error creating file ", err)
