@@ -25,7 +25,7 @@ type RiverLevelApplicationData struct {
 	SensorData []RiverLevelSensorData
 }
 
-func main() {
+func f1() {
 	strBytes := [20]byte{}
 	copy(strBytes[:], "bla")
 	d := ExampleData{Id: 1, Value: 3.2, StrBytes: strBytes}
@@ -38,7 +38,9 @@ func main() {
 	defer file.Close()
 	binary.Write(file, binary.LittleEndian, d)
 	fmt.Println("Binary file created ", exampleFilePath)
+}
 
+func f2() {
 	// create fixture data
 	sensorData := []RiverLevelSensorData{
 		{1, 30, 1030},
@@ -46,9 +48,9 @@ func main() {
 		{3, 35, 1030},
 		{2, 33, 1030},
 	}
-	var apiKey = "321"
+	var apiKey = [16]byte{1, 2, 3, 4}
 	var apiKeyBytes [16]byte
-	copy(apiKeyBytes[:], apiKey)
+	copy(apiKeyBytes[:], apiKey[:])
 	applicationData := RiverLevelApplicationData{3, apiKeyBytes, sensorData}
 	// convert to raw bytes
 	sendBytes := new(bytes.Buffer)
@@ -58,5 +60,17 @@ func main() {
 	for _, v := range applicationData.SensorData {
 		binary.Write(sendBytes, binary.LittleEndian, v)
 	}
-	fmt.Println("sendBytes ", sendBytes)
+	fmt.Println("sendBytes ", sendBytes, " size ", sendBytes.Len())
+	exampleFilePath := "temp/data.bin"
+	file, err := os.Create(exampleFilePath)
+	if err != nil {
+		fmt.Println("Error creating file ", err)
+		return
+	}
+	defer file.Close()
+	file.Write(sendBytes.Bytes())
+}
+
+func main() {
+	f2()
 }
