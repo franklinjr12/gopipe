@@ -43,11 +43,12 @@ func f1() {
 }
 
 func f2() {
-	// riverDataFormat := []normalizer.ApplicationBytesDecode{
-	// 	{0, 4, "float"},
-	// 	{4, 8, "float"},
-	// 	{8, 12, "float"},
-	// }
+	riverDataFormat := []normalizer.ApplicationBytesDecode{
+		{0, 4, "float"},
+		{4, 8, "float"},
+		{8, 12, "float"},
+	}
+	riverDataPacketSize := 12
 	// read binary data
 	file, err := os.Open("temp/data.bin")
 	if err != nil {
@@ -72,14 +73,24 @@ func f2() {
 	//first 24 bytes are header containing 8 bytes id and 16 bytes apikey
 	userId := uint64(binary.LittleEndian.Uint64(fileData[0:8]))
 	apiKey := fileData[8:24]
-	dataBytes := fileData[24:]
+	dataBytes := fileData[28:]
+	numPackets := uint32(binary.LittleEndian.Uint32(fileData[24:28]))
 	fmt.Println("dataBytes: ", dataBytes)
-	fmt.Println("dataBytes ", len(dataBytes))
-	numPackets := uint32(binary.LittleEndian.Uint32(dataBytes[0:4]))
+	fmt.Println("dataBytes lenght ", len(dataBytes))
 	fmt.Println("numPackets ", numPackets)
 	var applicationData []any
-	for i := 4; i < len(dataBytes[:]); i += 4 {
-		applicationData = append(applicationData, math.Float32frombits(binary.LittleEndian.Uint32(dataBytes[i:i+4])))
+	for i := 0; i < int(numPackets); i++ {
+		packet := dataBytes[i*riverDataPacketSize : i*riverDataPacketSize+riverDataPacketSize]
+		for _, v := range riverDataFormat {
+			switch v.Type {
+			case "int":
+				applicationData = append(applicationData, int32(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+			case "float":
+				applicationData = append(applicationData, math.Float32frombits(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+			case "bytes":
+				applicationData = append(applicationData, string(packet[v.FirstByte:v.LastByte]))
+			}
+		}
 	}
 	fmt.Println("User ", userId, " key ", apiKey, " data ", applicationData)
 }
