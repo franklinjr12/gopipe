@@ -78,11 +78,10 @@ func f2() {
 	numPackets := uint32(binary.LittleEndian.Uint32(dataBytes[0:4]))
 	fmt.Println("numPackets ", numPackets)
 	var applicationData []any
-	for i := 4; i < len(dataBytes[4:]); i += 4 {
-		applicationData = append(applicationData, math.Float32frombits(binary.LittleEndian.Uint32(fileData[i:i+4])))
+	for i := 4; i < len(dataBytes[:]); i += 4 {
+		applicationData = append(applicationData, math.Float32frombits(binary.LittleEndian.Uint32(dataBytes[i:i+4])))
 	}
 	fmt.Println("User ", userId, " key ", apiKey, " data ", applicationData)
-
 }
 
 func main() {

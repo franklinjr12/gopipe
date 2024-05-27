@@ -60,7 +60,7 @@ func f2() {
 	for _, v := range applicationData.SensorData {
 		binary.Write(sendBytes, binary.LittleEndian, v)
 	}
-	fmt.Println("sendBytes ", sendBytes, " size ", sendBytes.Len())
+	fmt.Println("sendBytes ", sendBytes.Bytes(), " size ", sendBytes.Len())
 	exampleFilePath := "temp/data.bin"
 	file, err := os.Create(exampleFilePath)
 	if err != nil {
