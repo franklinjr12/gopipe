@@ -1,6 +1,7 @@
 package gopipeauth
 
 import (
+	"encoding/binary"
 	"errors"
 	"gopipe/internal/database"
 )
@@ -24,4 +25,11 @@ func AuthenticateDataInput(authData DataInputAuth) error {
 		return nil
 	}
 	return errors.New(UNAUTHORIZED_ERROR)
+}
+
+func ExtractUserAndKeyFromTcp(payload []byte) (dataInputAuth DataInputAuth) {
+	// user and apikey will always be the first 24 bytes of a packet
+	dataInputAuth.UserId = uint64(binary.LittleEndian.Uint64(payload[0:8]))
+	dataInputAuth.ApiKey = string(payload[8:24])
+	return dataInputAuth
 }
