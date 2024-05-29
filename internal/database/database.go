@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -44,4 +45,21 @@ func WriteUnpipedData(db *sql.DB, data UnpipedData) error {
 	queryStr := "insert into unpiped_data (user_id, application, data) values ($1, $2, $3)"
 	_, err := db.Exec(queryStr, data.UserId, data.Application, data.Data)
 	return err
+}
+
+func SelectApplicationDataStructure(db *sql.DB, applicationId uint64, version int) {
+	file, err := os.Open("database/select_application_data_structures.sql")
+	if err != nil {
+		fmt.Println("Error opening file ", err)
+		return
+	}
+	defer file.Close()
+	var fileBytes [256]byte
+	_, err = file.Read(fileBytes[:])
+	if err != nil {
+		fmt.Println("Error reading file ", err)
+		return
+	}
+	queryStr := string(fileBytes[:])
+	fmt.Println("Query ", queryStr)
 }
