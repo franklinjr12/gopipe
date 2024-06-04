@@ -25,7 +25,20 @@ func testUserExist() {
 	fmt.Println("Exist: ", exist)
 }
 
+func testSelectApplicationDataStructure() {
+	db := database.Open()
+	applicationId := uint64(1)
+	version := 0
+	rows := database.SelectApplicationDataStructure(db, applicationId, version)
+	if rows != nil {
+		defer rows.Close()
+		columns, _ := rows.Columns()
+		fmt.Println("Columns: ", columns)
+	}
+}
+
 func main() {
-	testSelectApplicationId()
 	testUserExist()
+	testSelectApplicationId()
+	testSelectApplicationDataStructure()
 }

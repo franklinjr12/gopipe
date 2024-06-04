@@ -48,10 +48,40 @@ func WriteUnpipedData(db *sql.DB, data UnpipedData) error {
 }
 
 func SelectApplicationId(db *sql.DB, name string, companyId uint64) (applicationId uint64) {
-	file, err := os.Open("database/select_application_id.sql")
+	queryFile := "select_application_id.sql"
+	queryStr, err := readQueryFile(queryFile)
+	if err != nil {
+		fmt.Println("Error reading query file ", queryFile, " ", err)
+		return 0
+	}
+	err = db.QueryRow(queryStr, name, companyId).Scan(&applicationId)
+	if err != nil {
+		fmt.Println("Error reading applicationId: ", err)
+		return 0
+	}
+	return applicationId
+}
+
+func SelectApplicationDataStructure(db *sql.DB, applicationId uint64, version int) *sql.Rows {
+	queryFile := "select_application_data_structures.sql"
+	queryStr, err := readQueryFile(queryFile)
+	if err != nil {
+		fmt.Println("Error reading query file ", queryFile, " ", err)
+		return nil
+	}
+	rows, err := db.Query(queryStr, applicationId, version)
+	if err != nil {
+		fmt.Println("Error reading application data structure ", err)
+		return nil
+	}
+	return rows
+}
+
+func readQueryFile(fileName string) (string, error) {
+	file, err := os.Open("database/" + fileName)
 	if err != nil {
 		fmt.Println("Error opening file ", err)
-		return
+		return "", err
 	}
 	defer file.Close()
 	var fileBytes [256]byte
@@ -59,30 +89,8 @@ func SelectApplicationId(db *sql.DB, name string, companyId uint64) (application
 	bytesRead, err = file.Read(fileBytes[:])
 	if err != nil {
 		fmt.Println("Error reading file ", err)
-		return
+		return "", err
 	}
 	queryStr := string(fileBytes[:bytesRead])
-	err = db.QueryRow(queryStr, name, companyId).Scan(&applicationId)
-	if err != nil {
-		fmt.Println("Error reading applicationId: ", err)
-		applicationId = 0
-	}
-	return applicationId
-}
-
-func SelectApplicationDataStructure(db *sql.DB, applicationId uint64, version int) {
-	file, err := os.Open("database/select_application_data_structures.sql")
-	if err != nil {
-		fmt.Println("Error opening file ", err)
-		return
-	}
-	defer file.Close()
-	var fileBytes [256]byte
-	_, err = file.Read(fileBytes[:])
-	if err != nil {
-		fmt.Println("Error reading file ", err)
-		return
-	}
-	queryStr := string(fileBytes[:])
-	fmt.Println("Query ", queryStr)
+	return queryStr, nil
 }
