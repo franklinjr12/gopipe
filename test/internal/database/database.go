@@ -27,5 +27,5 @@ func testUserExist() {
 
 func main() {
 	testSelectApplicationId()
-	// testUserExist()
+	testUserExist()
 }

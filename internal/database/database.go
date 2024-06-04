@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"strings"
 
 	_ "github.com/lib/pq"
 )
@@ -56,29 +55,14 @@ func SelectApplicationId(db *sql.DB, name string, companyId uint64) (application
 	}
 	defer file.Close()
 	var fileBytes [256]byte
-	_, err = file.Read(fileBytes[:])
+	var bytesRead int
+	bytesRead, err = file.Read(fileBytes[:])
 	if err != nil {
 		fmt.Println("Error reading file ", err)
 		return
 	}
-	// queryStr := string(fileBytes[:])
-	// fmt.Println("=== Here is the original queryyyyy: ", queryStr)
-	// queryStr2 := strings.ReplaceAll(queryStr, "\n", " ")
-	// fmt.Printf("=== Query after replace: ")
-	// fmt.Printf("%s\n", queryStr2)
-	// queryStr3 := strings.ReplaceAll(queryStr2, "\t", " ")
-	// fmt.Println("=== Query after replace: ", queryStr3)
-
-	queryStr := string(fileBytes[:])
-	queryStr = strings.ReplaceAll(queryStr, "\n", " ")
-	queryStr = strings.ReplaceAll(queryStr, "\t", " ")
-	queryStr = strings.Join(strings.Fields(queryStr), " ")
-	fmt.Println("=== Query after removing extra spaces: ", queryStr)
-
-	fmt.Println("=== Query: ", queryStr, " name: ", name, " companyId: ", companyId)
+	queryStr := string(fileBytes[:bytesRead])
 	err = db.QueryRow(queryStr, name, companyId).Scan(&applicationId)
-	// queryStr = "select id from applications where name = 'River level monitoring' and company_id = 1"
-	// err = db.QueryRow(queryStr).Scan(&applicationId)
 	if err != nil {
 		fmt.Println("Error reading applicationId: ", err)
 		applicationId = 0
