@@ -33,7 +33,12 @@ func testSelectApplicationDataStructure() {
 	if rows != nil {
 		defer rows.Close()
 		columns, _ := rows.Columns()
-		fmt.Println("Columns: ", columns)
+		var dbTypeNames []string
+		types, _ := rows.ColumnTypes()
+		for _, v := range types {
+			dbTypeNames = append(dbTypeNames, v.DatabaseTypeName())
+		}
+		fmt.Printf("Columns:\t%v\nTypes:\t\t%v\n", columns, dbTypeNames)
 	}
 }
 
