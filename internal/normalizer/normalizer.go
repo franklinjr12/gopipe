@@ -2,7 +2,9 @@ package normalizer
 
 import (
 	"database/sql"
+	"encoding/binary"
 	"encoding/json"
+	"math"
 )
 
 type ApplicationBytesDecode struct {
@@ -29,4 +31,25 @@ func RowsToFormatStruct(rows *sql.Rows) []ApplicationBytesDecode {
 		formatArray = append(formatArray, format)
 	}
 	return formatArray
+}
+
+func BytesToStruct(data []byte, dataSize int, format []ApplicationBytesDecode) []any {
+	results := make([]any, dataSize)
+	elementSize := len(data) / dataSize
+	for i := 0; i < dataSize; i++ {
+		p := i * elementSize
+		packet := data[p : p+elementSize]
+		for _, v := range format {
+			switch v.Type {
+			case "int":
+				results = append(results, int32(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+			case "float":
+				results = append(results, math.Float32frombits(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+			case "bytes":
+				results = append(results, string(packet[v.FirstByte:v.LastByte]))
+			}
+		}
+	}
+	return results
+
 }

@@ -13,6 +13,12 @@ func testRowsToFormatStruct() {
 	fmt.Println("appStruct: ", appStruct)
 }
 
+func testBytesToStruct() {
+	db := database.Open()
+
+}
+
 func main() {
 	testRowsToFormatStruct()
+	testBytesToStruct()
 }
