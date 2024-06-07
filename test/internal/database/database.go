@@ -42,8 +42,18 @@ func testSelectApplicationDataStructure() {
 	}
 }
 
+func testInsertPipedData() {
+	pipedData := database.PipedData{
+		ApplicationId: 1, Version: 0, Data: []byte{},
+	}
+	db := database.Open()
+	err := database.InsertPipedData(db, &pipedData)
+	fmt.Println("InsertPipedData err: ", err)
+}
+
 func main() {
-	testUserExist()
-	testSelectApplicationId()
-	testSelectApplicationDataStructure()
+	// testUserExist()
+	// testSelectApplicationId()
+	// testSelectApplicationDataStructure()
+	testInsertPipedData()
 }
