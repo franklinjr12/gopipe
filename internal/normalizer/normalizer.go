@@ -42,11 +42,11 @@ func BytesToStruct(data []byte, dataSize int, format []ApplicationBytesDecode) [
 		for _, v := range format {
 			switch v.Type {
 			case "int":
-				results = append(results, int32(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+				results = append(results, int32(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte+1])))
 			case "float":
-				results = append(results, math.Float32frombits(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte])))
+				results = append(results, math.Float32frombits(binary.LittleEndian.Uint32(packet[v.FirstByte:v.LastByte+1])))
 			case "bytes":
-				results = append(results, string(packet[v.FirstByte:v.LastByte]))
+				results = append(results, string(packet[v.FirstByte:v.LastByte+1]))
 			}
 		}
 	}
